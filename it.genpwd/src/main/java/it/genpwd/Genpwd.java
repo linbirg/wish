@@ -10,7 +10,7 @@ public class Genpwd {
 	public static void main(String[] args) {
 		if (args.length == 1) {
 			String cryptString = doGenpwd(args[0].trim());
-			System.out.println("加密结果：" + cryptString);
+			System.out.println("cryptString:" + cryptString);
 		}
 	}
 
