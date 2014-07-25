@@ -3,9 +3,10 @@ package lin.soft.crwaler;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import lin.soft.crawler.Crawler;
-import lin.soft.crawler.Filter;
-import lin.soft.crawler.Spider;
+import lin.wish.crawler.Crawler;
+import lin.wish.crawler.Filter;
+import lin.wish.crawler.JDITemlHandler;
+import lin.wish.crawler.URLDispatcher;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class SpiderAndCrawlerTest {
 	Logger logger = LoggerFactory.getLogger(SpiderAndCrawlerTest.class);
+	
 	
 	@Test
 	public void unionTest() throws InterruptedException{
@@ -45,21 +47,9 @@ public class SpiderAndCrawlerTest {
 	}
 	
 	private Thread startSpider(){
-		Spider spider = new Spider();
-		spider.getFilterManager().addFilter(new Filter() {
-			
-			public boolean filter(String url) {
-				logger.debug("spider:filter:"+url);
-				String regex = "^(http://|https://)?(www)?(item.jd.com/)(.*?)(\\.html)$";
-				Pattern pattern = Pattern.compile(regex);
-				Matcher matcher = pattern.matcher(url);
-				if (matcher.find()) {
-					logger.debug("spider:filter:true");
-					return true;
-				}
-				return false;
-			}
-		});
+		URLDispatcher spider = new URLDispatcher();
+		JDITemlHandler jdiTemlHandler = new JDITemlHandler();
+		spider.addHandler(jdiTemlHandler);
 		return spider.start();
 	}
 	
@@ -68,4 +58,5 @@ public class SpiderAndCrawlerTest {
 		Thread spiderThread = startSpider();
 		spiderThread.join();
 	}
+	
 }

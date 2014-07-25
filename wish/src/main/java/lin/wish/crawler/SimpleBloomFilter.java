@@ -1,4 +1,4 @@
-package lin.soft.crawler;
+package lin.wish.crawler;
 
 import java.util.BitSet;
 

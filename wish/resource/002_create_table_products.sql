@@ -1,0 +1,21 @@
+CREATE TABLE product(
+    ID			NUMBER(32) NOT NULL PRIMARY KEY,
+	NAME    	VARCHAR2(500),
+	CODE    	VARCHAR2(100),
+	COMPANY    	VARCHAR2(100),
+	URL 		VARCHAR2(500),
+	PRICE   	NUMBER(32),
+	DESCRIPTION 	VARCHAR2(500),
+    IMG_URL 	VARCHAR2(500),
+    OFFERS		VARCHAR2(200),
+    DELIVERY	VARCHAR2(200),
+    created_at  VARCHAR2(50),
+    updated_at  VARCHAR2(50)
+);
+
+CREATE SEQUENCE SQ_PRODUCT_ID 
+INCREMENT BY 1 -- 每次加几个 
+START WITH 1 -- 从1开始计数 
+NOMAXvalue -- 不设置最大值 
+NOCYCLE -- 一直累加，不循环 
+NOCACHE; --设置缓存cache个序列，如果系统down掉了或者其它情况将会导致序列不连续，也可以设置为---------NOCACHE

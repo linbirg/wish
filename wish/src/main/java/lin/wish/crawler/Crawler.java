@@ -1,5 +1,6 @@
-package lin.soft.crawler;
+package lin.wish.crawler;
 
+import lin.wish.BerkeleyDB.BDBPersistentQueue;
 import lin.wish.WebResource.WebTemplate;
 
 import org.jsoup.nodes.Element;
@@ -7,12 +8,11 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import BerkeleyDB.BDBPersistentQueue;
-
 
 /**
  * 从一个给定的网址开始，按照广度优先的顺序，抓取网页中的所有连接。
  * */
+//@Deprecated
 public class Crawler implements Runnable{
 	Logger logger = LoggerFactory.getLogger(Crawler.class);
 

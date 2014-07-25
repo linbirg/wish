@@ -3,8 +3,8 @@ package lin.soft.crwaler;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import lin.soft.crawler.Crawler;
-import lin.soft.crawler.Filter;
+import lin.wish.crawler.Crawler;
+import lin.wish.crawler.Filter;
 
 import org.junit.Test;
 import org.slf4j.Logger;

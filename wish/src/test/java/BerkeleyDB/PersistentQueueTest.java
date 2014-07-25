@@ -1,5 +1,7 @@
 package BerkeleyDB;
 
+import lin.wish.BerkeleyDB.BDBPersistentQueue;
+
 import org.junit.Assert;
 import org.junit.Test;
 

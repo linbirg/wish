@@ -1,4 +1,4 @@
-package BerkeleyDB;
+package lin.wish.BerkeleyDB;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

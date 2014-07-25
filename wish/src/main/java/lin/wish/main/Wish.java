@@ -1,4 +1,4 @@
-package lin.soft.wish;
+package lin.wish.main;
 
 /**
  * Hello world!

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   					   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	  <property name="location">
+	    <value>database.properties</value>
+	  </property>
+	  <property name="searchSystemEnvironment" value="true"></property>
+	  <property name="fileEncoding" value="UTF-8" />
+	  <property name="ignoreResourceNotFound" value="false"/>
+	</bean>
+
+	
+	<!-- wish数据库 -->
+	<bean id="dataSource"
+		class="lin.base.dao.DriverManagerDataSourceSecure">
+		<property name="URL" value="${wishdb.url}" />
+		<property name="user" value="${wishdb.username}" />
+		<property name="password" value="${wishdb.password}" />
+		<property name="connectionCachingEnabled" value="true" />
+		<property name="connectionCacheProperties">
+	      <value>	
+			MinLimit:1
+			MaxLimit:5
+			InitialLimit:1
+			ConnectionWaitTimeout:120
+			InactivityTimeout:180
+			ValidateConnection:true
+	      </value>
+	    </property>
+	</bean>
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+	</bean>
+	
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="transactionTemplate"
+		class="org.springframework.transaction.support.TransactionTemplate">
+		<property name="transactionManager">
+			<ref bean="transactionManager" />
+		</property>
+	</bean>
+	
+	<bean id="productDao"
+		class="lin.wish.dao.ProductDao">
+		<property name="jdbcTemplate" ref="jdbcTemplate"></property>
+	</bean>
+</beans>

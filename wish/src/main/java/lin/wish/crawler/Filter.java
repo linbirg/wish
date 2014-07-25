@@ -1,4 +1,4 @@
-package lin.soft.crawler;
+package lin.wish.crawler;
 
 public interface Filter {
 	public boolean filter(String url);
