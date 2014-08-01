@@ -11,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Comparator;
+import java.util.Iterator;
 
 import com.sleepycat.je.Cursor;
 import com.sleepycat.je.Database;
@@ -20,8 +21,6 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
-
-
 
 /**
  * Fast queue implementation on top of Berkley DB Java Edition.
@@ -67,6 +66,8 @@ public class BDBPersistentQueue<T> implements AutoCloseable {
 	 * periodically.
 	 */
 	private int opsCounter;
+
+	private Cursor cursor = null;
 
 	/**
 	 * Creates instance of persistent queue.
@@ -123,7 +124,8 @@ public class BDBPersistentQueue<T> implements AutoCloseable {
 	 * 
 	 * @return element from the head of the queue or null if queue is empty
 	 * 
-	 * @throws IllegalStateException:ClassNotFound
+	 * @throws IllegalStateException
+	 *             :ClassNotFound
 	 */
 	@SuppressWarnings("unchecked")
 	public T poll() {
@@ -133,7 +135,7 @@ public class BDBPersistentQueue<T> implements AutoCloseable {
 			cursor.getFirst(key, data, LockMode.RMW);
 			if (data.getData() == null)
 				return null;
-
+			
 			T result;
 			try (ByteArrayInputStream bis = new ByteArrayInputStream(
 					data.getData());
@@ -141,7 +143,7 @@ public class BDBPersistentQueue<T> implements AutoCloseable {
 				result = (T) in.readObject();
 			} catch (ClassNotFoundException e) {
 				throw new IllegalStateException(e);
-			}catch(IOException ioe){
+			} catch (IOException ioe) {
 				throw new IllegalStateException(ioe);
 			}
 
@@ -174,7 +176,7 @@ public class BDBPersistentQueue<T> implements AutoCloseable {
 
 			BigInteger prevKeyValue;
 			if (key.getData() == null) {
-				prevKeyValue = BigInteger.valueOf(-1);
+				prevKeyValue = BigInteger.valueOf(-1);// 从0开始计数key值。
 			} else {
 				prevKeyValue = new BigInteger(key.getData());
 			}
@@ -189,7 +191,7 @@ public class BDBPersistentQueue<T> implements AutoCloseable {
 				byte[] bytes = bos.toByteArray();
 				final DatabaseEntry newData = new DatabaseEntry(bytes);
 				queueDatabase.put(null, newKey, newData);
-			}catch (IOException e) {
+			} catch (IOException e) {
 				throw new IllegalStateException(e);
 			}
 
@@ -201,6 +203,68 @@ public class BDBPersistentQueue<T> implements AutoCloseable {
 				}
 			}
 		}
+	}
+
+//	/**
+//	 * Retrieves and returns element from the head of this queue.
+//	 * 
+//	 * @return element from the head of the queue or null if queue is empty
+//	 * 
+//	 * @throws IllegalStateException
+//	 *             :ClassNotFound
+//	 */
+//	@SuppressWarnings("unchecked")
+//	public T getNext() {
+//		final DatabaseEntry key = new DatabaseEntry();
+//		final DatabaseEntry data = new DatabaseEntry();
+//		if (cursor == null) {
+//			cursor = queueDatabase.openCursor(null, null);
+//		}
+//		
+//		OperationStatus status= cursor.getNext(key, data, LockMode.RMW);
+//		if (status != OperationStatus.SUCCESS) {
+//			cursor.close();
+//			cursor = null;
+//			return null;
+//		}
+//		
+//		if (data.getData() == null)
+//			return null;
+//
+//		T result;
+//		try (ByteArrayInputStream bis = new ByteArrayInputStream(data.getData());
+//				ObjectInput in = new ObjectInputStream(bis)) {
+//			result = (T) in.readObject();
+//		} catch (ClassNotFoundException e) {
+//			throw new IllegalStateException(e);
+//		} catch (IOException ioe) {
+//			throw new IllegalStateException(ioe);
+//		}
+//		return result;
+//	}
+	
+	/**
+	 * 提供iterator，以便于遍历。
+	 * */
+	public Iterator<T> getIterator(){
+		BDBPQueneIterator iterator = new BDBPQueneIterator();
+		iterator.setQueueDatabase(queueDatabase);
+		
+		DatabaseEntry key = new DatabaseEntry();
+		DatabaseEntry data = new DatabaseEntry();
+		try(Cursor cursor = queueDatabase.openCursor(null, null)){
+			cursor.getLast(key, data, LockMode.RMW);
+
+			BigInteger lastKeyValue;
+			if (key.getData() == null) {
+				lastKeyValue = BigInteger.valueOf(-1);// 从0开始计数key值。
+			} else {
+				lastKeyValue = new BigInteger(key.getData());
+			}
+			
+			iterator.setLastKey(lastKeyValue);
+		}
+		return iterator;
 	}
 
 	/**
@@ -226,6 +290,9 @@ public class BDBPersistentQueue<T> implements AutoCloseable {
 	 */
 	@Override
 	public void close() {
+		if (cursor != null) {
+			cursor.close();
+		}
 		queueDatabase.close();
 		dbEnv.close();
 	}
@@ -266,5 +333,72 @@ public class BDBPersistentQueue<T> implements AutoCloseable {
 		}
 
 	}
+	
+	//{{iterator
+	public class BDBPQueneIterator implements Iterator<T>{
+		private BigInteger currentKey;
+		private BigInteger lastKey;
+		private Database queueDatabase;
+		
+		
+		public BDBPQueneIterator() {
+			super();
+			currentKey = BigInteger.valueOf(-1);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return (currentKey.compareTo(getLastKey()) < 0);
+		}
+
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public T next() {
+			if (!hasNext()) {
+				return null;
+			}
+			
+			currentKey = currentKey.add(BigInteger.ONE);
+			final DatabaseEntry curKey = new DatabaseEntry(
+					currentKey.toByteArray());
+			final DatabaseEntry data = new DatabaseEntry();
+			getQueueDatabase().get(null, curKey, data, LockMode.DEFAULT);
+			
+			if (data.getData() == null) {
+				return null;
+			}
+			
+			T result;
+			try (ByteArrayInputStream bis = new ByteArrayInputStream(
+					data.getData());
+					ObjectInput in = new ObjectInputStream(bis)) {
+				result = (T) in.readObject();
+			} catch (ClassNotFoundException e) {
+				throw new IllegalStateException(e);
+			} catch (IOException ioe) {
+				throw new IllegalStateException(ioe);
+			}
+			return result;
+		}
+
+		public Database getQueueDatabase() {
+			return queueDatabase;
+		}
+
+		public void setQueueDatabase(Database queueDatabase) {
+			this.queueDatabase = queueDatabase;
+		}
+
+		public BigInteger getLastKey() {
+			return lastKey;
+		}
+
+		public void setLastKey(BigInteger lastKey) {
+			this.lastKey = lastKey;
+		}
+	}
+	
+	//}}
 
 }

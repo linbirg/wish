@@ -20,6 +20,7 @@ import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.Transaction;
 import com.sleepycat.je.TransactionConfig;
 
+//@Deprecated
 public class BerkeleyDBHelper {
 	private Logger logger = LoggerFactory.getLogger(BerkeleyDBHelper.class);
 

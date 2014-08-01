@@ -15,6 +15,8 @@ public class CrawlerAsURLHandler extends URLHandler {
 	private FilterManager filterManager = new FilterManager();
 	private String baseUrl;
 
+	
+	//{{public
 	public CrawlerAsURLHandler() {
 		super();
 		urlQuene = new BDBPersistentQueue<String>("wishDB", "d:\\wishDb.db");
@@ -25,13 +27,23 @@ public class CrawlerAsURLHandler extends URLHandler {
 		this();
 		this.baseUrl = baseUrl;
 	}
+	
+	public void initQueue(String startUrl) {
+		//urlQuene.clear();
+		put(startUrl);
+	}
+	
+	//}}
 
-	// 提供给dispatcher调用的接口，crawler处理所有的url。
+	//{{ override
+	/**
+	 * 提供给dispatcher调用的接口，crawler处理所有的url。
+	 * */ 
 	@Override
 	public boolean filter(String url) {
 		return true;
 	}
-
+	
 	@Override
 	protected void doHandle(String url) {
 		logger.debug("准备处理页面[" + url + "]");
@@ -50,11 +62,9 @@ public class CrawlerAsURLHandler extends URLHandler {
 		}
 	}
 	
-	public void initQueue(String startUrl) {
-		//urlQuene.clear();
-		put(startUrl);
-	}
+	//}}
 
+	//{{ private
 	/**
 	 * 增加默认过滤器，默认过滤器保证队列中url的唯一性。
 	 * */
@@ -62,10 +72,15 @@ public class CrawlerAsURLHandler extends URLHandler {
 		getFilterManager().addFilter(new UniFilter());
 	}
 
+	/**
+	 * put不检查唯一性。
+	 * */
 	private void put(String url) {
 		urlQuene.push(url);
 		logger.info(String.format("put:urlQuene size:%d", urlQuene.size()));
 	}
+	
+	//}}
 
 	public FilterManager getFilterManager() {
 		return filterManager;

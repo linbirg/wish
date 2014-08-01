@@ -11,6 +11,7 @@ import lin.wish.crawler.JDITemlHandler;
 import lin.wish.crawler.URLDispatcher;
 import lin.wish.crawler.URLHandler;
 import lin.wish.dao.ProductDao;
+import lin.wish.updater.Updater;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -68,7 +69,7 @@ public class DispatcherTest {
 	public void test_dispatcher_with_crawler() throws InterruptedException{
 		URLDispatcher dispatcher = new URLDispatcher();
 		JDITemlHandler jdiTemlHandler = new JDITemlHandler();
-		jdiTemlHandler.setProductDao(productDao);
+		//jdiTemlHandler.setProductDao(productDao);
 		
 		CrawlerAsURLHandler crawlerHandler = new CrawlerAsURLHandler("http://www.jd.com");
 		crawlerHandler.getFilterManager().addFilter(new Filter() {
@@ -95,5 +96,14 @@ public class DispatcherTest {
 		
 		Thread dispatcherThread = dispatcher.start();
 		dispatcherThread.join();
+	}
+	
+	@Test
+	public void test_crawler_dispatcher_and_updater() throws InterruptedException{
+		Updater updater = new Updater();
+		updater.setProductDao(productDao);
+		updater.setPeriod(5*60);
+		updater.start();
+		test_dispatcher_with_crawler();
 	}
 }

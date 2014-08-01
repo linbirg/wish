@@ -7,6 +7,7 @@ import java.util.List;
 
 
 public class BaseSpringDaoUtils {
+	//{{ public static
 	/**
 	 * 转换器。配合Utils.transform函数，对列表内容进行变换。
 	 * 
@@ -70,4 +71,5 @@ public class BaseSpringDaoUtils {
 		}
 		return list;
 	}
+	//}}
 }
