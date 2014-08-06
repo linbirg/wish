@@ -1,0 +1,18 @@
+CREATE TABLE his_price(
+    ID			NUMBER(32) NOT NULL PRIMARY KEY,
+    product_id  NUMBER(32),
+    name        VARCHAR2(500),
+	CODE    	VARCHAR2(100),
+	COMPANY    	VARCHAR2(100),
+	PRICE   	NUMBER(32),
+	DESCRIPTION 	VARCHAR2(500),  --增加对价格的描述，必然促销价等。 
+    created_at  VARCHAR2(50),
+    updated_at  VARCHAR2(50)
+);
+
+CREATE SEQUENCE SEQ_PRICE_ID 
+INCREMENT BY 1  
+START WITH 1 
+NOMAXvalue 
+NOCYCLE
+NOCACHE;

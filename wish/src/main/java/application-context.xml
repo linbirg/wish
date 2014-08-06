@@ -56,4 +56,9 @@
 		class="lin.wish.dao.ProductDao">
 		<property name="jdbcTemplate" ref="jdbcTemplate"></property>
 	</bean>
+	
+	<bean id="hisPriceDao"
+		class="lin.wish.dao.HisPriceDao">
+		<property name="jdbcTemplate" ref="jdbcTemplate"></property>
+	</bean>
 </beans>

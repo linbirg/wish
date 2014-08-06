@@ -10,6 +10,7 @@ import lin.wish.crawler.Filter;
 import lin.wish.crawler.JDITemlHandler;
 import lin.wish.crawler.URLDispatcher;
 import lin.wish.crawler.URLHandler;
+import lin.wish.dao.HisPriceDao;
 import lin.wish.dao.ProductDao;
 import lin.wish.updater.Updater;
 
@@ -23,6 +24,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class DispatcherTest {
 	Logger logger = LoggerFactory.getLogger(DispatcherTest.class);
 	ProductDao productDao;
+	HisPriceDao hisPriceDao;
 	
 	@Before
 	public void testAppication(){
@@ -32,6 +34,9 @@ public class DispatcherTest {
 		Assert.assertNotNull(applicationContext);
 		productDao = (ProductDao)applicationContext.getBean("productDao");
 		Assert.assertNotNull(productDao);
+		
+		hisPriceDao = (HisPriceDao)applicationContext.getBean("hisPriceDao");
+		Assert.assertNotNull(hisPriceDao);
 	}
 	
 	@Test
@@ -102,6 +107,7 @@ public class DispatcherTest {
 	public void test_crawler_dispatcher_and_updater() throws InterruptedException{
 		Updater updater = new Updater();
 		updater.setProductDao(productDao);
+		updater.setHisPriceDao(hisPriceDao);
 		updater.setPeriod(5*60);
 		updater.start();
 		test_dispatcher_with_crawler();

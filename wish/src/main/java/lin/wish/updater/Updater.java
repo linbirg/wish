@@ -5,7 +5,9 @@ import java.util.List;
 
 import lin.wish.BerkeleyDB.BDBPersistentQueue;
 import lin.wish.WebResource.WebJDItem;
+import lin.wish.dao.HisPriceDao;
 import lin.wish.dao.ProductDao;
+import lin.wish.model.HisPrice;
 import lin.wish.model.Product;
 import lin.wish.utils.TimeHelper;
 
@@ -23,6 +25,8 @@ public class Updater extends TimeTask {
 	private Timer updateTimer = new Timer();
 
 	private ProductDao productDao;
+	
+	private HisPriceDao hisPriceDao;
 
 	private long period = 2 * 60;
 
@@ -75,6 +79,17 @@ public class Updater extends TimeTask {
 			} else {
 				getProductDao().insert(jdProduct);
 			}
+			
+			HisPrice hisPrice = new HisPrice();
+			hisPrice.setPrice(jdProduct.getPrice());
+			hisPrice.setName(jdProduct.getName());
+			hisPrice.setCode(jdProduct.getCode());
+			hisPrice.setCompany(jdProduct.getCompany());
+			hisPrice.setProduct_id(jdProduct.getId());
+			//hisPrice.setCreated_at(TimeHelper.now2Str());
+			hisPrice.setUpdated_at(TimeHelper.now2Str());
+			
+			getHisPriceDao().insert(hisPrice);
 		}
 
 	}
@@ -94,6 +109,14 @@ public class Updater extends TimeTask {
 
 	public void setPeriod(long period) {
 		this.period = period;
+	}
+
+	public HisPriceDao getHisPriceDao() {
+		return hisPriceDao;
+	}
+
+	public void setHisPriceDao(HisPriceDao hisPriceDao) {
+		this.hisPriceDao = hisPriceDao;
 	}
 
 	// }}
