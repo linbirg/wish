@@ -1,0 +1,151 @@
+
+@header-background:#ececec;
+
+@title-color: #663399;//#CC0033;//#FF9900;
+@title-hover-color: #FF6600;//#990033;//
+
+
+
+@menu-color: #FF9966;
+@sub-menu-color: #333333;
+@active-ground-color: #ccccCC;//#ececec;
+
+@search-btn-bg:#99CCFF;
+
+@sidebar-bg:#FFFFFF;
+
+.menu-font (@font-size: 15px) {
+	font-family: "Microsoft YaHei";
+	font-size: @font-size;
+}
+
+body {
+}
+
+div.navbar {
+	margin: 0px 0px 1px;
+}
+
+div.wh-header {
+	background-color: @header-background;
+	//background-image: url(./../image/logo-bg.png);
+	//height:83px;
+	
+	.navbar-brand{
+		a{
+			
+			img{
+				margin-left:-12px;
+				margin-top:-15px;
+			}
+		}	
+	}
+}
+
+div.navbar-header {
+	a.title {
+		font-family: "Microsoft YaHei";
+		font-size: 18px;
+		height: 30px;
+		font-weight: bold;
+		color: @title-color;
+		text-decoration: none;
+		&:hover {
+			color: @title-hover-color;
+		}
+	}
+}
+
+div.sidebar {
+	position: relative;
+	float: left;
+	width: 232px;
+	background-color:@sidebar-bg;
+	.nav {
+		.active {
+			border-left: 2px solid @title-color;
+			background-color: @active-ground-color;
+		}
+
+		li {
+			a {
+				&:hover {
+					border-left: 2px solid @title-color;
+				}
+			}
+
+			.menu {
+				color: @menu-color;
+				.menu-font ();
+			}
+
+			ul.subnav {
+				.sub-menu {
+					color: @sub-menu-color;
+					.menu-font ();
+					padding-left: 30px;
+				}
+			}
+		}
+	}
+}
+
+div.page-content {
+	padding-left: 240px;
+	form {
+		//border:1px solid @active-ground-color;
+		fieldset {
+			ul {
+				border-bottom:1px solid @active-ground-color;
+				list-style: none;
+				
+				li{
+					height:40px;
+					label{
+						width:90px;
+						font-weight:normal;
+					}
+					input,select{
+						margin-left:20px;
+						height:26px;	
+					}
+				}
+				
+				.up_line(@right:580px;@up:-40px){
+					margin-left:@right;
+					margin-top:@up;
+				}
+				
+				.tradedate_end{
+					.up_line();
+				}
+				
+				.variety{
+					.up_line();
+				}
+			}
+			
+			button{
+				margin:5px 40px;
+				background-color:@search-btn-bg;
+				border:none;
+				width:40px;
+			}
+			
+			&.line-button{
+				border-bottom:1px solid @active-ground-color;
+				height:40px;
+			}
+		}
+	}
+	
+	div.result{
+		margin-top:30px;
+		table{
+			thead{
+				background: none repeat scroll 0 0 #EcEcEc;
+			}
+		}
+	}
+}
+
